@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 
 import java.util.Random;
 
@@ -28,6 +29,32 @@ class Potwor extends Postac {
 }
 
 class Bohater extends Postac {
+  private int zycia = 3;
+
+  public Boolean martwy()
+  {
+    return (zycia == 0);
+  }
+
+  public void zwiekszZycie()
+  {
+    zycia++;
+  } 
+
+  public void zmniejszZycie(int ilosc)
+  {
+    zycia -= ilosc;
+  }
+
+  public void zmniejszZycie()
+  {
+    zycia--;
+  }
+  
+  public int getZycie()
+  {
+    return zycia;
+  }
 }
 
 class Sciana extends Element {
@@ -96,6 +123,7 @@ public class Gra extends JFrame {
 
 	private Plansza plansza;
 	private JButton runda = new JButton("Następna runda");
+        private JLabel iloscZyc = new JLabel("Ilość żyć: 3");
 	private Icon mrowka = new ImageIcon("ant0a.gif"), potwor = new ImageIcon("being0f.gif"),
 			jablko = new ImageIcon("bu_APPLE1.GIF"), bohater = new ImageIcon("smurf-1.gif"),
 			sciana = new ImageIcon("worksmal.gif");
@@ -115,10 +143,10 @@ public class Gra extends JFrame {
                 przesunPostac(j,i);
               } else if (plansza.getElement(j,i) instanceof Potwor)
               {
-                System.out.print("Potwor");
+                przesunPostac(j,i);
               } else if (plansza.getElement(j,i) instanceof Mrowka)
               {
-                System.out.print("Mrowka");
+                przesunPostac(j,i);
               }
             }
           }
@@ -133,11 +161,37 @@ public class Gra extends JFrame {
 		uaktualnijEtykiety();
 	}
 
+        private void sprawdzZycie(int x, int y, Element elem)
+        {
+          if (elem instanceof Bohater)
+          {
+            Bohater bohater = (Bohater)elem;
+            if (plansza.getElement(x,y) instanceof Jablko)
+            {
+              bohater.zwiekszZycie();
+            } else if (plansza.getElement(x,y) instanceof Mrowka)
+            {
+              bohater.zmniejszZycie();
+            } else if (plansza.getElement(x,y) instanceof Potwor)
+            {
+              bohater.zmniejszZycie(bohater.getZycie());
+            }
+            iloscZyc.setText("Ilość żyć: " + bohater.getZycie());
+            if (bohater.getZycie() == 0)
+            {
+              JOptionPane.showMessageDialog(this, "Brak żyć. Koniec gry.");
+              runda.setEnabled(false);
+            }
+
+          }
+        }
+
+
+
         private void przesunPostac(int j, int i)
         {
           if (plansza.getElement(j,i).przesuniety == false)
           {
-            System.out.println("PRZESUNPOSTAC");
             Boolean mozliwosci[] = new Boolean[4];
             int ilosc = 0;
             mozliwosci[0] = sprawdzGora(j,i);
@@ -156,27 +210,31 @@ public class Gra extends JFrame {
                 switch(tmp)
                 {
                   case 0:
+                    sprawdzZycie(j, i-1, elem);
                     plansza.setElement(j,i-1, elem);
-                    System.out.println("gora");
                     break;
                   case 1:
+                    sprawdzZycie(j+1, i, elem);
                     plansza.setElement(j+1,i, elem);
-                    System.out.println("prawo");
                     break;
                   case 2:
+                    sprawdzZycie(j, i+1, elem);
                     plansza.setElement(j,i+1, elem);
-                    System.out.println("dol");
                     break;
                   case 3: 
+                    sprawdzZycie(j-1, i, elem);
                     plansza.setElement(j-1,i, elem);
-                    System.out.println("lewo");
                     break;
+                }
+                if (elem instanceof Bohater)
+                {
+                    Bohater asd = (Bohater) elem;
+                    System.out.println(asd.getZycie());
                 }
                 break;
               }
             }
 
-            System.out.println(ilosc);
           }
         } 
 
@@ -184,25 +242,37 @@ public class Gra extends JFrame {
         {
           if (j == 0)
           {
-            System.out.println("LEWO");
             return false;
-          } else if (plansza.getElement(j-1,i) instanceof Postac || plansza.getElement(j-1,i) instanceof Sciana)
+          } else 
           {
-            System.out.println("LEWO");
+          Boolean warunek = plansza.getElement(j-1, i) instanceof Sciana;
+          if (!(plansza.getElement(j, i) instanceof Bohater))
+          {
+            warunek = warunek || plansza.getElement(j-1, i) instanceof Element;
+          }
+          if (warunek)
+          {
             return false;
           } 
             return true;
+          }
         }
         private Boolean sprawdzPrawo(int j, int i)
         {
           if (j == plansza.getSzerokosc()-1)
           {
-            System.out.println("PRAWO");
             return false;
-          } else if (plansza.getElement(j+1,i) instanceof Postac || plansza.getElement(j+1,i) instanceof Sciana)
+          } else 
           {
-            System.out.println("PRAWO");
+          Boolean warunek = plansza.getElement(j+1, i) instanceof Sciana;
+          if (!(plansza.getElement(j, i) instanceof Bohater))
+          {
+            warunek = warunek || plansza.getElement(j+1, i) instanceof Element;
+          }
+          if (warunek)
+          {
             return false;
+          }
           } 
             return true;
         }
@@ -211,25 +281,36 @@ public class Gra extends JFrame {
         {
           if (i == plansza.getWysokosc()-1)
           {
-            System.out.println("DOL");
             return false;
-          } else if (plansza.getElement(j,i+1) instanceof Postac || plansza.getElement(j,i+1) instanceof Sciana)
+          } else  
           {
-            System.out.println("DOL");
+          Boolean warunek = plansza.getElement(j, i+1) instanceof Sciana;
+          if (!(plansza.getElement(j, i) instanceof Bohater))
+          {
+            warunek = warunek || plansza.getElement(j, i+1) instanceof Element;
+          }
+          if (warunek)
+          {
             return false;
-          } 
+          }
             return true;
+          }
         }
         private Boolean sprawdzGora(int j, int i)
         {
           if (i == 0)
           {
-            System.out.println("GORA");
             return false;
-          } else if (plansza.getElement(j,i-1) instanceof Postac || plansza.getElement(j,i-1) instanceof Sciana)
+          } else           {
+          Boolean warunek = plansza.getElement(j, i-1) instanceof Sciana;
+          if (!(plansza.getElement(j, i) instanceof Bohater))
           {
-            System.out.println("GORA");
+            warunek = warunek || plansza.getElement(j, i-1) instanceof Element;
+          }
+          if (warunek)
+          {
             return false;
+          }
           } 
             return true;
         }
@@ -267,6 +348,7 @@ public class Gra extends JFrame {
 		plansza = p;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		add(BorderLayout.SOUTH, runda);
+		add(BorderLayout.NORTH, iloscZyc);
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(plansza.getWysokosc(), plansza.getSzerokosc()));
 		add(BorderLayout.CENTER, panel);
@@ -291,6 +373,7 @@ public class Gra extends JFrame {
 				nastepnaRunda();
 			}
 		});
+
 
 		pack();
 
