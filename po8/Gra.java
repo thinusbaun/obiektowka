@@ -193,11 +193,13 @@ public class Gra extends JFrame {
           if (plansza.getElement(j,i).przesuniety == false)
           {
             Boolean mozliwosci[] = new Boolean[4];
+            int[] offsetsj = {0,1,0,-1};
+            int[] offsetsi = {-1,0,1,0};
             int ilosc = 0;
-            mozliwosci[0] = sprawdzGora(j,i);
-            mozliwosci[1] = sprawdzPrawo(j,i);
-            mozliwosci[2] = sprawdzDol(j,i);
-            mozliwosci[3] = sprawdzLewo(j,i);
+            for (int count = 0; count<mozliwosci.length; count++)
+            {
+              mozliwosci[count] = sprawdzMiejece(j, i, offsetsj[count], offsetsi[count]);
+            }
             Random generator = new Random();
             Element elem =plansza.getElement(j,i);
             elem.przesuniety = true;
@@ -238,82 +240,27 @@ public class Gra extends JFrame {
           }
         } 
 
-        private Boolean sprawdzLewo(int j, int i)
+        private Boolean sprawdzMiejece(int j, int i, int offsetj, int offseti)
         {
-          if (j == 0)
+          if (((j == 0) && (offsetj == -1)) || 
+              ((j == plansza.getSzerokosc()-1) && (offsetj == 1)) ||
+              ((i == 0) && (offseti == -1)) ||
+              ((i == plansza.getWysokosc()-1) && (offseti == 1)))
           {
             return false;
-          } else 
-          {
-          Boolean warunek = plansza.getElement(j-1, i) instanceof Sciana;
+          }
+          Boolean warunek = plansza.getElement(j + offsetj, i + offseti) instanceof Sciana;
           if (!(plansza.getElement(j, i) instanceof Bohater))
           {
-            warunek = warunek || plansza.getElement(j-1, i) instanceof Element;
-          }
-          if (warunek)
-          {
-            return false;
-          } 
-            return true;
-          }
-        }
-        private Boolean sprawdzPrawo(int j, int i)
-        {
-          if (j == plansza.getSzerokosc()-1)
-          {
-            return false;
-          } else 
-          {
-          Boolean warunek = plansza.getElement(j+1, i) instanceof Sciana;
-          if (!(plansza.getElement(j, i) instanceof Bohater))
-          {
-            warunek = warunek || plansza.getElement(j+1, i) instanceof Element;
+            warunek = warunek || plansza.getElement(j + offsetj, i + offseti) instanceof Element;
           }
           if (warunek)
           {
             return false;
           }
-          } 
-            return true;
+          return true;
         }
 
-        private Boolean sprawdzDol(int j, int i)
-        {
-          if (i == plansza.getWysokosc()-1)
-          {
-            return false;
-          } else  
-          {
-          Boolean warunek = plansza.getElement(j, i+1) instanceof Sciana;
-          if (!(plansza.getElement(j, i) instanceof Bohater))
-          {
-            warunek = warunek || plansza.getElement(j, i+1) instanceof Element;
-          }
-          if (warunek)
-          {
-            return false;
-          }
-            return true;
-          }
-        }
-        private Boolean sprawdzGora(int j, int i)
-        {
-          if (i == 0)
-          {
-            return false;
-          } else           {
-          Boolean warunek = plansza.getElement(j, i-1) instanceof Sciana;
-          if (!(plansza.getElement(j, i) instanceof Bohater))
-          {
-            warunek = warunek || plansza.getElement(j, i-1) instanceof Element;
-          }
-          if (warunek)
-          {
-            return false;
-          }
-          } 
-            return true;
-        }
 	private int lastRow = 0;
 
 	private void uaktualnijEtykiety() {
