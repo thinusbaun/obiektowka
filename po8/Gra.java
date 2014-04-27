@@ -20,15 +20,6 @@ abstract class Element {
 
 
 abstract class Postac extends Element {
-}
-
-class Mrowka extends Postac {
-}
-
-class Potwor extends Postac {
-}
-
-class Bohater extends Postac {
   private int zycia = 3;
 
   public Boolean martwy()
@@ -57,6 +48,15 @@ class Bohater extends Postac {
   }
 }
 
+class Mrowka extends Postac {
+}
+
+class Potwor extends Postac {
+}
+
+class Bohater extends Postac {
+}
+
 class Sciana extends Element {
 }
 
@@ -81,10 +81,10 @@ class Plansza {
           {
             for (int j =0; j<getSzerokosc(); j++)
             {
-              int tmp = generator.nextInt(86);
+              int tmp = generator.nextInt(77);
               switch(tmp)
               {
-                case 10:
+                case 10 || 17:
                 elementy[i][j] = new Sciana();
                 break;
                 case 2:
@@ -128,6 +128,8 @@ public class Gra extends JFrame {
 			jablko = new ImageIcon("bu_APPLE1.GIF"), bohater = new ImageIcon("smurf-1.gif"),
 			sciana = new ImageIcon("worksmal.gif");
 	private JLabel[][] etykiety;
+        private int[] offsetsJ = {0,1,0,-1};
+        private int[] offsetsI = {-1,0,1,0};
 
 	public static void main(String[] args) {
 		new Gra(new Plansza(25, 20)).setVisible(true);
@@ -138,13 +140,9 @@ public class Gra extends JFrame {
           {
             for (int j = 0; j<plansza.getSzerokosc(); j++)
             {
-              if (plansza.getElement(j,i) instanceof Bohater)
-              {
-                przesunPostac(j,i);
-              } else if (plansza.getElement(j,i) instanceof Potwor)
-              {
-                przesunPostac(j,i);
-              } else if (plansza.getElement(j,i) instanceof Mrowka)
+              if (plansza.getElement(j,i) instanceof Bohater ||
+                  plansza.getElement(j, i) instanceof Potwor ||
+                  plansza.getElement(j, i) instanceof Mrowka)
               {
                 przesunPostac(j,i);
               }
@@ -158,7 +156,7 @@ public class Gra extends JFrame {
               plansza.getElement(j,i).przesuniety = false;
             }
           }
-		uaktualnijEtykiety();
+          uaktualnijEtykiety();
 	}
 
         private void sprawdzZycie(int x, int y, Element elem)
@@ -182,23 +180,18 @@ public class Gra extends JFrame {
               JOptionPane.showMessageDialog(this, "Brak żyć. Koniec gry.");
               runda.setEnabled(false);
             }
-
           }
         }
-
-
 
         private void przesunPostac(int j, int i)
         {
           if (plansza.getElement(j,i).przesuniety == false)
           {
             Boolean mozliwosci[] = new Boolean[4];
-            int[] offsetsj = {0,1,0,-1};
-            int[] offsetsi = {-1,0,1,0};
             int ilosc = 0;
             for (int count = 0; count<mozliwosci.length; count++)
             {
-              mozliwosci[count] = sprawdzMiejece(j, i, offsetsj[count], offsetsi[count]);
+              mozliwosci[count] = sprawdzMiejece(j, i, offsetsJ[count], offsetsI[count]);
             }
             Random generator = new Random();
             Element elem =plansza.getElement(j,i);
@@ -209,36 +202,56 @@ public class Gra extends JFrame {
               int tmp = generator.nextInt(4);
               if (mozliwosci[tmp] == true)
               {
+                if (sprawdzMrowki(j, i))
+                {
+                  Postac asd = (Postac) elem;
+                  asd.zmniejszZycie();
+                }
                 switch(tmp)
                 {
                   case 0:
                     sprawdzZycie(j, i-1, elem);
-                    plansza.setElement(j,i-1, elem);
+                    plansza.setElement(j, i-1, elem);
                     break;
                   case 1:
                     sprawdzZycie(j+1, i, elem);
-                    plansza.setElement(j+1,i, elem);
+                    plansza.setElement(j+1, i, elem);
                     break;
                   case 2:
                     sprawdzZycie(j, i+1, elem);
-                    plansza.setElement(j,i+1, elem);
+                    plansza.setElement(j, i+1, elem);
                     break;
                   case 3: 
                     sprawdzZycie(j-1, i, elem);
-                    plansza.setElement(j-1,i, elem);
+                    plansza.setElement(j-1, i, elem);
                     break;
-                }
-                if (elem instanceof Bohater)
-                {
-                    Bohater asd = (Bohater) elem;
-                    System.out.println(asd.getZycie());
                 }
                 break;
               }
             }
-
           }
         } 
+
+        private Boolean sprawdzMrowki(int j, int i)
+        {
+          Boolean warunek = false;
+          for (int tmp = 0; tmp<offsetsI.length; tmp++)
+          {
+            try
+            {
+              if (plansza.getElement(j + offsetsJ[tmp], i + offsetsI[tmp]) instanceof Mrowka)
+              {
+                if (!warunek)
+                {
+                  warunek = true;
+                }
+              }
+            } catch (Exception e)
+            {
+            }
+          }
+          return warunek;
+        }
 
         private Boolean sprawdzMiejece(int j, int i, int offsetj, int offseti)
         {
@@ -250,6 +263,7 @@ public class Gra extends JFrame {
             return false;
           }
           Boolean warunek = plansza.getElement(j + offsetj, i + offseti) instanceof Sciana;
+          warunek = warunek || plansza.getElement(j + offsetj, i + offseti) instanceof Mrowka;
           if (!(plansza.getElement(j, i) instanceof Bohater))
           {
             warunek = warunek || plansza.getElement(j + offsetj, i + offseti) instanceof Element;
