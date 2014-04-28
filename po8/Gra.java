@@ -84,7 +84,10 @@ class Plansza {
               int tmp = generator.nextInt(77);
               switch(tmp)
               {
-                case 10 || 17:
+                case 10:
+                elementy[i][j] = new Sciana();
+                break;
+                case 18:
                 elementy[i][j] = new Sciana();
                 break;
                 case 2:
@@ -159,18 +162,15 @@ public class Gra extends JFrame {
           uaktualnijEtykiety();
 	}
 
-        private void sprawdzZycie(int x, int y, Element elem)
+        private void sprawdzZycie(int x, int y, int xOffset, int yOffset, Element elem)
         {
           if (elem instanceof Bohater)
           {
-            Bohater bohater = (Bohater)elem;
-            if (plansza.getElement(x,y) instanceof Jablko)
+            Bohater bohater = (Bohater) elem;
+            if (plansza.getElement(x + xOffset ,y + yOffset) instanceof Jablko)
             {
               bohater.zwiekszZycie();
-            } else if (plansza.getElement(x,y) instanceof Mrowka)
-            {
-              bohater.zmniejszZycie();
-            } else if (plansza.getElement(x,y) instanceof Potwor)
+            } else if (plansza.getElement(x + xOffset, y + yOffset) instanceof Potwor)
             {
               bohater.zmniejszZycie(bohater.getZycie());
             }
@@ -210,19 +210,19 @@ public class Gra extends JFrame {
                 switch(tmp)
                 {
                   case 0:
-                    sprawdzZycie(j, i-1, elem);
+                    sprawdzZycie(j, i, 0, -1, elem);
                     plansza.setElement(j, i-1, elem);
                     break;
                   case 1:
-                    sprawdzZycie(j+1, i, elem);
+                    sprawdzZycie(j, i, 1, 0, elem);
                     plansza.setElement(j+1, i, elem);
                     break;
                   case 2:
-                    sprawdzZycie(j, i+1, elem);
+                    sprawdzZycie(j, i, 0, 1, elem);
                     plansza.setElement(j, i+1, elem);
                     break;
                   case 3: 
-                    sprawdzZycie(j-1, i, elem);
+                    sprawdzZycie(j, i, -1, 0, elem);
                     plansza.setElement(j-1, i, elem);
                     break;
                 }
