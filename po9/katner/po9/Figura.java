@@ -4,6 +4,7 @@ abstract class Figura
 {
   abstract void przesun(int dx, int dy);
   abstract void skaluj(int skala);
-  abstract float pole();
+  abstract double pole();
+  abstract double obwod();
 }
 

@@ -40,6 +40,19 @@ class Trojkat extends Figura
 		return pkt3;
 	}
 
+        public void setPkt1(Punkt pkt)
+        {
+                pkt1 = pkt;
+        }
+
+        public void setPkt2(Punkt pkt)
+        {
+                pkt2 = pkt;
+        }
+        public void setPkt3(Punkt pkt)
+        {
+                pkt3 = pkt;
+        }
 	public String toString()
 	{
 		return pkt1 + " -> " + pkt2 + " -> " + pkt3;
@@ -53,27 +66,35 @@ class Trojkat extends Figura
 	}
   void skaluj(int skala)
   {
-    Punkt lgorny = getPkt1();
+    Punkt glowny = getPkt1();
     Punkt pkt = getPkt2();
-    pkt.setY(lgorny.getY()-(lgorny.getY()-pkt.getY())*skala);
+    pkt.setY(glowny.getY()-(glowny.getY()-pkt.getY())*skala);
+    pkt.setX(glowny.getY()-(glowny.getY()-pkt.getY())*skala);
     setPkt2(pkt);
     pkt = getPkt3();
-    pkt.setX(lgorny.getX()-(lgorny.getX()-pkt.getX())*skala);
+    pkt.setY(glowny.getY()-(glowny.getY()-pkt.getY())*skala);
+    pkt.setX(glowny.getY()-(glowny.getY()-pkt.getY())*skala);
     setPkt3(pkt);
-    pkt = getPkt4();
-    pkt.setX(lgorny.getX()-(lgorny.getX()-pkt.getX())*skala);
-    pkt.setY(lgorny.getY()-(lgorny.getY()-pkt.getY())*skala);
-    setPkt4(pkt);
   }
 
-  float pole()
+  double pole()
   {
-    float a = Math.sqrt(Math.pow(getPkt2().getX()-getPkt1.getX(),2)+Math.pow(getPkt2().getY()-getPkt1().getX(),2));
-    float b = Math.sqrt(Math.pow(getPkt3().getX()-getPkt2.getX(),2)+Math.pow(getPkt3().getY()-getPkt2().getX(),2));
-    float c = Math.sqrt(Math.pow(getPkt1().getX()-getPkt3.getX(),2)+Math.pow(getPkt1().getY()-getPkt3().getX(),2));
-    float p = (a+b+c)/2;
+    Linia l1 = new Linia(pkt1, pkt2);
+    Linia l2 = new Linia(pkt2, pkt3);
+    Linia l3 = new Linia(pkt3, pkt1);
+    double a = l1.dlugosc();
+    double b = l2.dlugosc();
+    double c = l3.dlugosc();
+    double p = (a+b+c)/2;
     return Math.sqrt(p*(p-a)*(p-b)*(p-c));
   }
 
+  double obwod()
+  {
+    Linia l1 = new Linia(pkt1, pkt2);
+    Linia l2 = new Linia(pkt2, pkt3);
+    Linia l3 = new Linia(pkt3, pkt1);
+    return l1.dlugosc() + l2.dlugosc() + l3.dlugosc();
+  }
 
 }

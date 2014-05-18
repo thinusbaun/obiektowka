@@ -14,15 +14,16 @@ class Prostokat extends Czworokat
     pkt.setY(lgorny.getY()-(lgorny.getY()-pkt.getY())*skala);
     setPkt2(pkt);
     pkt = getPkt3();
+    pkt.setY(lgorny.getY()-(lgorny.getY()-pkt.getY())*skala);
     pkt.setX(lgorny.getX()-(lgorny.getX()-pkt.getX())*skala);
     setPkt3(pkt);
     pkt = getPkt4();
-    pkt.setX(lgorny.getX()-(lgorny.getX()-pkt.getX())*skala);
     pkt.setY(lgorny.getY()-(lgorny.getY()-pkt.getY())*skala);
+    pkt.setX(lgorny.getX()-(lgorny.getX()-pkt.getX())*skala);
     setPkt4(pkt);
   }
 
-  float pole()
+  double pole()
   {
     int a = getPkt2().getY() - getPkt1().getY();
     int b = getPkt3().getX() - getPkt2().getX();

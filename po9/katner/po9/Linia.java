@@ -43,4 +43,9 @@ class Linia
 		pkt2.przesun(dx,dy);
 	}
 
+        public double dlugosc()
+        {
+          return Math.sqrt(Math.pow(pkt1.getX() - pkt2.getX(), 2) + Math.pow(pkt1.getY() - pkt2.getY(), 2));
+        }
+
 }
